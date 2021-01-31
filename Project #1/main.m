@@ -10,15 +10,18 @@ close all
 %% Constants
 
 NUM_TRIALS = 1e6;
+NUM_ROLLS = 3;
+NUM_FUN = 3;
+NUM_ABILITIES = 6;
 MAX_VAL = 6;
 
 
 %% Question 1 Part A
 
-q1aTheoretical = (1/MAX_VAL)^3;
+q1aTheoretical = (1/MAX_VAL)^NUM_ROLLS;
 
 % Run trials
-q1aTrials = genQ1A( MAX_VAL, 3, NUM_TRIALS );
+q1aTrials = genQ1A( MAX_VAL, NUM_ROLLS, NUM_TRIALS );
 
 % Calculate ability scores
 q1aAbilityScore = sum( q1aTrials );
@@ -29,10 +32,10 @@ q1aExperimental = calcExperimental( q1aAbilityScore, 18 );
 
 %% Question 1 Part B
 
-q1bTheoretical = 1-( 1-q1aTheoretical )^3;
+q1bTheoretical = 1-( 1-q1aTheoretical )^NUM_FUN;
 
 % Run trials
-q1bTrials = genQ1B( MAX_VAL, 3, 3, NUM_TRIALS );
+q1bTrials = genQ1B( MAX_VAL, NUM_FUN, NUM_ROLLS, NUM_TRIALS );
 
 % Calculate ability scores
 q1bTempScore = sum( q1bTrials, ndims(q1bTrials)-1 );
@@ -44,10 +47,10 @@ q1bExperimental = calcExperimental( q1bAbilityScore, 18 );
 
 %% Question 1 Part C
 
-q1cTheoretical = q1bTheoretical^6;
+q1cTheoretical = q1bTheoretical^NUM_ABILITIES;
 
 % Run trials
-q1cTrials = genQ1C( MAX_VAL, 6, 3, 3, NUM_TRIALS );
+q1cTrials = genQ1C( MAX_VAL, NUM_ABILITIES, NUM_FUN, NUM_ROLLS, NUM_TRIALS );
 
 % Calculate ability scores
 q1cTempScore = sum( q1cTrials, ndims(q1cTrials)-1 );
@@ -55,17 +58,16 @@ q1cAbilityScore = max( q1cTempScore, [], ndims(q1cTrials)-2 );
 q1cAbilityScore = squeeze( q1cAbilityScore );
 
 % Get matches
-q1cExperimental = calcExperimentalVec( q1cAbilityScore, 18*ones(1,6) );
+q1cExperimental = calcExperimentalVec( q1cAbilityScore, 18*ones(1,NUM_ABILITIES) );
 
 
 %% Question 1 Part D
 
-%%%%%%%%%%%%%%%%%%%% this is wrong b/c it takes the max of 3 tries
-%%%%%%%%%%%%%%%%%%%% so should be P(9 from 3 dice) * ( 1-( P(roll>9)^3 )
-q1dTheoretical = ( 1-(1-( 25/(6^3) ) )^3 )^6;
+% P( all rolls <= 9 ) - P( all rolls <= 8 )
+q1dTheoretical = ((81/216)^NUM_FUN - ((81-25)/216)^NUM_FUN)^NUM_ABILITIES;
 
 % Run trials
-q1dTrials = genQ1C( MAX_VAL, 6, 3, 3, NUM_TRIALS );
+q1dTrials = genQ1C( MAX_VAL, NUM_ABILITIES, NUM_FUN, NUM_ROLLS, NUM_TRIALS );
 
 % Calculate ability scores
 q1dTempScore = sum( q1dTrials, ndims(q1dTrials)-1 );
@@ -73,7 +75,7 @@ q1dAbilityScore = max( q1dTempScore, [], ndims(q1dTrials)-2 );
 q1dAbilityScore = squeeze( q1dAbilityScore );
 
 % Get matches
-q1dExperimental = calcExperimentalVec( q1dAbilityScore, 9*ones(1,6) );
+q1dExperimental = calcExperimentalVec( q1dAbilityScore, 9*ones(1,NUM_ABILITIES) );
 
 
 %% Question 2 Part A
@@ -102,6 +104,13 @@ pmfTroll(2);
 
 %% Question 2 Part C
 
+% 1/4 chance to insta-kill everything
+% 1/2 chance to get a sum 3 fireball
+    % 1,2,3 health for 6 trolls out of 4 HP options
+% 1/4 chance to get a sum 2 fireball
+    % 1,2 health for 6 trolls out of 4 HP options
+q2cTheoretical = (1/4) + (1/2) * (3^6 / 4^6) + (1/4) * (2^6 / 4^6);
+
 NUM_TROLLS = 6;
 q2cFire = genFire( NUM_TRIALS );
 q2cTrolls = createTrolls( NUM_TROLLS, NUM_TRIALS );
@@ -117,6 +126,8 @@ q2cExperimental = q2cAllDead / NUM_TRIALS;
 
 
 %% Question 2 Part D
+
+q2eTheoretical = .5*((10/20)^1 * ((4+1)/2)) + (10/20)^1 * ((6+1)/2)*2;
 
 NUM_TROLLS = 6;
 q2dFire = genFire( NUM_TRIALS );
