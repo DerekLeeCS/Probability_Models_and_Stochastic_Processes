@@ -39,6 +39,8 @@ MSE_1_linear_theoretical = 4/15;
 checkEst( MSE_1_linear_experimental, MSE_1_linear_theoretical );
 disp( "Linear: Successful" + newline() );
 
+theoretical_1 = MMSE_theoretical(X);
+
 
 %% Scenario 2
 
