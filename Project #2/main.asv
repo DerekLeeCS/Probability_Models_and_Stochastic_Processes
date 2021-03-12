@@ -1,0 +1,81 @@
+clc
+clear
+close all
+
+% Probability & Stochastic Processes Spring 2021
+% Project #2
+% Brian Doan, Derek Lee
+
+
+%% Scenario 1
+
+% Constants
+numDraws = 1e6;
+
+% Distributions
+Y = unifrnd( -1,1, [1,numDraws] );
+W = unifrnd( -2,2, [1,numDraws] );
+X = Y+W;
+
+disp( "Starting Scenario 1..." );
+
+% Bayes
+% Calculate experimental MSE
+estY = MMSE_Y(X);
+MSE_1_bayes_experimental = calcMSE(estY,Y);
+
+% Check theoretical vs. experimental
+MSE_1_bayes_theoretical = 1/4;
+checkEst( MSE_1_bayes_experimental, MSE_1_bayes_theoretical );
+disp( "Bayes: Successful" );
+
+% Linear
+% Calculate experimental MSE
+estY = LMMSE_Y(X);
+MSE_1_linear_experimental = calcMSE(estY,Y);
+
+% Check theoretical vs. experimental
+MSE_1_linear_theoretical = 4/15;
+checkEst( MSE_1_linear_experimental, MSE_1_linear_theoretical );
+disp( "Linear: Successful" + newline() );
+
+
+%% Scenario 2
+
+% Constants
+numDraws = 1e5;
+mu_y = 1;
+
+% Variables
+var_y = [3];
+var_r = [1];
+
+figure();
+hold on;
+for i = 1:length(var_y)
+
+    % Distributions
+    Y = normrnd( 0, var_y(i), [1,numDraws] );
+    R_1 = normrnd( 0, var_r(i), [1,numDraws] );
+    R_2 = normrnd( 0, var_r(i), [1,numDraws] );
+    X_1 = Y+R_1;
+    X_2 = Y+R_2;
+
+    disp( "Starting Scenario 2..." );
+
+    % Calculate experimental MSE
+    estY = MMSE_two_Y( X_1, X_2, mu_y, var_y(i), var_r(i) );
+    MSE_2_experimental = calcMSE(estY,Y);
+
+    % Check theoretical vs. experimental
+    MSE_2_theoretical = ( var_y(i) * var_r(i) ) / ( 2*var_y(i) + var_r(i) );
+%     checkEst( MSE_2_experimental, MSE_2_theoretical );
+%     disp( "Linear (Two): Successful" + newline() );
+    
+    line( [i,i], [ MSE_2_experimental, MSE_2_theoretical ] )
+    plot( i, MSE_2_experimental, 'x''DisplayName','2016' );
+    plot( i, MSE_2_theoretical, 'o', 'DisplayName','Theoretical' );
+    
+end
+
+legend();
