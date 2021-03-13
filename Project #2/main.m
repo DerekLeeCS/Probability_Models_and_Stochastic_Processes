@@ -45,13 +45,14 @@ theoretical_1 = MMSE_theoretical(X);
 %% Scenario 2
 
 % Constants
-numDraws = 1e5;
+numDraws = 1e4;
+numObservations = 5;
 mu_y = 1;
+mu_x = mu_y;
 
 % Variables
-var_y = [3,2,0.5];
-var_r = [1,2,0.25];
-
+var_y = 2;
+var_r = 1;
 
 disp( "Starting Scenario 2..." );
 
@@ -61,30 +62,35 @@ hold on;
 ColOrd = get(gca,'ColorOrder');
 
 % Loop through pairs of variances
-for i = 1:length(var_y)
+for nObv = 1:numObservations
 
     % Distributions
-    Y = normrnd( 0, var_y(i), [1,numDraws] );
-    R_1 = normrnd( 0, var_r(i), [1,numDraws] );
-    R_2 = normrnd( 0, var_r(i), [1,numDraws] );
-    X_1 = Y+R_1;
-    X_2 = Y+R_2;
+    Y = normrnd( mu_y, sqrt(var_y), [1,numDraws] );
+    R = normrnd( 0, sqrt(var_r), [nObv,numDraws] );
+    X = Y+R;
 
+    % Covariances
+    cov_xx = cov(X.');
+    cov_xy = zeros( nObv, 1 );
+    for j = 1:nObv
+        temp = cov( X(j,:), Y );
+        cov_xy(j) = temp(2,2);
+    end
+    
     % Calculate experimental MSE
-    estY = MMSE_two_Y( X_1, X_2, mu_y, var_y(i), var_r(i) );
+    a = cov_xx \ cov_xy;    % Equiv to cov_xx^-1 * cov_xy
+    estY = MMSE_multiple_Y( X, mu_x, mu_y, a );
     MSE_2_experimental = calcMSE(estY,Y);
 
     % Check theoretical vs. experimental
-    MSE_2_theoretical = ( var_y(i) * var_r(i) ) / ( 2*var_y(i) + var_r(i) );
-%     checkEst( MSE_2_experimental, MSE_2_theoretical );
-%     disp( "Linear (Two): Successful" + newline() );
+    MSE_2_theoretical = var_y - ( (cov_xy).' * a );
     
     % Plot
-    line( [i,i], [ MSE_2_experimental, MSE_2_theoretical ], ... 
-            'DisplayName', "var_y: "+var_y(i)+", var_r: "+var_r(i), ...
-            'Color', ColOrd( mod(i,length(ColOrd)), : ) );
-    plot( i, MSE_2_experimental, 'or', 'HandleVisibility', 'off' );
-    plot( i, MSE_2_theoretical, 'og', 'HandleVisibility', 'off' );
+    line( [nObv,nObv], [ mean(MSE_2_experimental), MSE_2_theoretical ], ... 
+            'Color', ColOrd( mod(nObv,length(ColOrd)), : ), ...
+            'HandleVisibility', 'off');
+    plot( nObv, mean(MSE_2_experimental), 'or', 'HandleVisibility', 'off' );
+    plot( nObv, MSE_2_theoretical, 'og', 'HandleVisibility', 'off' );
     
 end
 
@@ -93,9 +99,10 @@ plot( NaN,NaN,'or', 'DisplayName', 'Experimental' );
 plot( NaN,NaN,'og', 'DisplayName', 'Theoretical' );
 
 % Label graph
-title( "MSE for Different Variances" );
-xlabel( "Pair Number (for Variances)" );
+title( "MSE for Different Number of Observations (var_y = " + var_y + ...
+        ", var_r = " + var_r + ")" );
+xlabel( "Number of Observations" );
 ylabel( "MSE" );
 legend();
-xlim( [0,length(var_y)+1] );
+xlim( [0,numObservations+1] );
 
