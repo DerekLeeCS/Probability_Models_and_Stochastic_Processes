@@ -10,11 +10,11 @@ close all
 %% Scenario 1
 
 % Constants
-numDraws = 1e6;
+NUM_DRAWS = 1e6;
 
 % Distributions
-Y = unifrnd( -1,1, [1,numDraws] );
-W = unifrnd( -2,2, [1,numDraws] );
+Y = unifrnd( -1,1, [1,NUM_DRAWS] );
+W = unifrnd( -2,2, [1,NUM_DRAWS] );
 X = Y+W;
 
 disp( "Starting Scenario 1..." );
@@ -54,8 +54,8 @@ disp(T);
 %% Scenario 2
 
 % Constants
-numDraws = 1e5;
-numObservations = 10;
+NUM_DRAWS = 1e5;
+NUM_OBSERVATIONS = 10;
 mu_y = 1;
 mu_r = 0;
 mu_x = mu_y;
@@ -71,11 +71,11 @@ figure();
 hold on;
 
 % Loop through pairs of variances
-for nObv = 1:numObservations
+for nObv = 1:NUM_OBSERVATIONS
 
     % Distributions
-    Y = normrnd( mu_y, sqrt(var_y), [1,numDraws] );
-    R = normrnd( 0, sqrt(var_r), [nObv,numDraws] );
+    Y = normrnd( mu_y, sqrt(var_y), [1,NUM_DRAWS] );
+    R = normrnd( 0, sqrt(var_r), [nObv,NUM_DRAWS] );
     X = Y+R;
 
     % Covariances
@@ -110,5 +110,5 @@ title( "MSE for Different Number of Observations (var_y = " + var_y + ...
 xlabel( "Number of Observations" );
 ylabel( "MSE" );
 legend();
-xlim( [0,numObservations+1] );
+xlim( [0,NUM_OBSERVATIONS+1] );
 
