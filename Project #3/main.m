@@ -87,14 +87,28 @@ eps = 1e-5;
 assert( abs(pred_exp-param_exp) < eps, "Exponential prediction is incorrect." );
 assert( abs(pred_rayl-param_rayl) < eps, "Rayleigh prediction is incorrect." );
 
-% Generate test data
-data_est_exp = exprnd( pred_exp * ones(1,length(data)) );
-data_est_rayl = raylrnd( pred_rayl * ones(1,length(data)) );
-
-err_exp = calcMSE( data_est_exp, data );
-err_rayl = calcMSE( data_est_rayl, data );
+%%%%% Theoretical data %%%%%
+% Calculate the MSE between two generated Exponentials 
+err_expected_exp = calcMSE( exprnd( pred_exp * ones(1,length(data)) ), ...
+                            exprnd( pred_exp * ones(1,length(data)) ) );
+% Calculate the MSE between two generated Rayleighs
+err_expected_rayl = calcMSE( raylrnd( pred_rayl * ones(1,length(data)) ), ...
+                            raylrnd( pred_rayl * ones(1,length(data)) ) );
+% Calculate the MSE between a generated Exponential and a generated Rayleigh
+err_expected_intersect = calcMSE( exprnd( pred_exp * ones(1,length(data)) ), ...
+                            raylrnd( pred_rayl * ones(1,length(data)) ) );
+                    
+%%%%% Real data %%%%%                      
+% Calculate the MSE 
+err_exp = calcMSE( exprnd( pred_exp * ones(1,length(data)) ), ...
+                        data );
+err_rayl = calcMSE( raylrnd( pred_rayl * ones(1,length(data)) ), ...
+                        data );
 
 % The distribution in data is probably drawn from a Rayleigh distribution,
-%       since the MSE for a generated Rayleigh distribution is lower than
-%       the MSE for a generated Exponential distribution.
+%       since the MSE between two generated Rayleigh distributions is 
+%       similar to the MSE between the data and a generated Rayleigh
+%       distribution.
+% The MSE between the data and a generated Exponential is similar to the
+%       MSE between a generated Rayleigh and a generated Exponential
 
