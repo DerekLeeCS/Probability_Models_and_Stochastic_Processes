@@ -11,72 +11,90 @@ close all
 
 load( 'data.mat' );
 NUM_OBSERVATIONS = 1e5;
-lambda = [ 0.1; 0.2; 0.3 ];
+lambda = [ 0.5; 1; 2 ];
 
 
 %% Part 1
 
-range = logspace( 1, log10(NUM_OBSERVATIONS), log10(NUM_OBSERVATIONS) );
-mse_exp = zeros( 3, length(range) );
-mse_rayl = zeros( 3, length(range) );
+% range = logspace( 1, log10(NUM_OBSERVATIONS), log10(NUM_OBSERVATIONS) );
+range = 1:2500;
+
+% Preallocate matrices
+mse_exp = zeros( length(lambda), length(range) );
+mse_rayl = zeros( length(lambda), length(range) );
+bias_exp = zeros( length(lambda), length(range) );
+bias_rayl = zeros( length(lambda), length(range) );
 
 % Plot a range of lambdas for a range of observations
 for numObv = range
     
     % Used for indexing
-    i = log10(numObv);
+%     i = log10(numObv);
+    i = numObv;
     
     % Generates a [ length(lambda) by numObv ] matrix
     % Each row represents one value of lambda
     data_exp = exprnd( lambda * ones(1,numObv) );
     data_rayl = raylrnd( lambda * ones(1,numObv) );
     
-    % Get true values
-    true_exp = calcExp( data_exp, lambda );
-    true_rayl = calcRayl( data_rayl, lambda );
-    
     % Log likelihood is maximized when lambda = 1/mean(x)
-    lambda_hat_exp = mean( data_exp, 2 );
-%     disp(lambda_exp_hat)
+    lambda_hat_exp = calcLambdaExp( data_exp );
+%     disp(lambda_hat_exp)
     
     % Log likelihood is maximized when lambda = sqrt( 1/2n * sum(x^2) )
-    lambda_hat_rayl = sum( data_rayl.^2, 2 ) / ( 2*length(data_rayl) );
-    lambda_hat_rayl = sqrt(lambda_hat_rayl);
+    lambda_hat_rayl = calcLambdaRayl( data_rayl );
 %     disp(lambda_rayl_hat)
 
-    % Get estimates
-    est_exp = calcExp( data_exp, lambda_hat_exp );
-    est_rayl = calcRayl( data_rayl, lambda_hat_rayl );
-
     % Calculate MSE
-    mse_exp(:,i) = calcMSE( est_exp, true_exp );
-    mse_rayl(:,i) = calcMSE( est_rayl, true_rayl );
+    mse_exp(:,i) = calcMSE( lambda_hat_exp, lambda );
+    mse_rayl(:,i) = calcMSE( lambda_hat_rayl, lambda );
+    
+    % Calculate bias
+    bias_exp(:,i) = calcBias( lambda_hat_exp, lambda );
+    bias_rayl(:,i) = calcBias( lambda_hat_rayl, lambda );
 
 end
 
+% Calculate variance
+var_exp = mse_exp - bias_exp.^2;
+var_rayl = mse_rayl - bias_rayl.^2;
+    
+% Plot MSE
+plotData( mse_exp, lambda, "MSE", "Exponential MSE" );
+plotData( mse_rayl, lambda, "MSE", "Rayleigh MSE" );
 
-% Plot
-figure();
-hold on;
+% Plot bias 
+plotData( bias_exp, lambda, "Bias", "Exponential Bias" );
+plotData( bias_rayl, lambda, "Bias", "Rayleigh Bias" );
 
-for i = 1:length(lambda)
-   
-    semilogy( mse_rayl(i,:), 'DisplayName', "Ray " + lambda(i) );
-    semilogy( mse_exp(i,:), 'DisplayName', "Exp " + lambda(i) );
+% Plot variance
+plotData( var_exp, lambda, "Variance", "Exponential Variance" );
+plotData( var_rayl, lambda, "Variance", "Rayleigh Variance" );
 
-end
-
-% end
-
-xlim( [0, max(log10(range))+1] );
-legend();
-hold off;
 
 %% Part 2
 
+% Calculate lambda
+pred_exp = calcLambdaExp( data );
+pred_rayl = calcLambdaRayl( data );
+
+% Check answer with built-in MATLAB function
 [ param_exp, ~ ] = mle( data, 'distribution', 'Exponential' );
 [ param_rayl, ~ ] = mle( data, 'distribution', 'Rayleigh' );
 
+% Verify lambda estimation
+eps = 1e-5;
+assert( abs(pred_exp-param_exp) < eps, "Exponential prediction is incorrect." );
+assert( abs(pred_rayl-param_rayl) < eps, "Rayleigh prediction is incorrect." );
+
+% Generate test data
+data_est_exp = exprnd( pred_exp * ones(1,length(data)) );
+data_est_rayl = raylrnd( pred_rayl * ones(1,length(data)) );
+
+err_exp = calcMSE( data_est_exp, data );
+err_rayl = calcMSE( data_est_rayl, data );
+
 % The distribution in data is probably drawn from a Rayleigh distribution,
-%       since the 
+%       since the MSE for a generated Rayleigh distribution is lower than
+%       the MSE for a generated Exponential distribution.
 
