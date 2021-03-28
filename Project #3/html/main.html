@@ -101,19 +101,13 @@ var_rayl = zeros( length(lambda), length(range) );
 
     <span class="comment">% Log likelihood is maximized when lambda = 1/mean(x)</span>
     lambda_hat_exp = calcLambdaExp( data_exp );
-<span class="comment">%     disp(lambda_hat_exp)</span>
 
     <span class="comment">% Log likelihood is maximized when lambda = sqrt( 1/2n * sum(x^2) )</span>
     lambda_hat_rayl = calcLambdaRayl( data_rayl );
-<span class="comment">%     disp(lambda_rayl_hat)</span>
 
     <span class="comment">% Calculate variance</span>
     var_exp(:,i) = var( lambda_hat_exp, 0, 2 );
     var_rayl(:,i) = var( lambda_hat_rayl, 0, 2 );
-
-    <span class="comment">% Get estimated lambda</span>
-    lambda_hat_exp = mean( lambda_hat_exp, 2 );
-    lambda_hat_rayl = mean( lambda_hat_rayl, 2 );
 
     <span class="comment">% Calculate MSE</span>
     mse_exp(:,i) = calcMSE( lambda_hat_exp, lambda );
@@ -137,7 +131,7 @@ plotData( bias_rayl, lambda, <span class="string">"Bias"</span>, <span class="st
 <span class="comment">% Plot variance</span>
 plotData( var_exp, lambda, <span class="string">"Variance"</span>, <span class="string">"Exponential Variance"</span> );
 plotData( var_rayl, lambda, <span class="string">"Variance"</span>, <span class="string">"Rayleigh Variance"</span> );
-</pre><h2 id="4">Part 2</h2><pre class="codeinput"><span class="comment">% Calculate lambda</span>
+</pre><img vspace="5" hspace="5" src="main_01.png" alt=""> <img vspace="5" hspace="5" src="main_02.png" alt=""> <img vspace="5" hspace="5" src="main_03.png" alt=""> <img vspace="5" hspace="5" src="main_04.png" alt=""> <img vspace="5" hspace="5" src="main_05.png" alt=""> <img vspace="5" hspace="5" src="main_06.png" alt=""> <h2 id="4">Part 2</h2><pre class="codeinput"><span class="comment">% Calculate lambda</span>
 pred_exp = calcLambdaExp( data );
 pred_rayl = calcLambdaRayl( data );
 
@@ -201,19 +195,13 @@ for numObv = range
     
     % Log likelihood is maximized when lambda = 1/mean(x)
     lambda_hat_exp = calcLambdaExp( data_exp );
-%     disp(lambda_hat_exp)
     
     % Log likelihood is maximized when lambda = sqrt( 1/2n * sum(x^2) )
     lambda_hat_rayl = calcLambdaRayl( data_rayl );
-%     disp(lambda_rayl_hat)
 
     % Calculate variance
     var_exp(:,i) = var( lambda_hat_exp, 0, 2 );
     var_rayl(:,i) = var( lambda_hat_rayl, 0, 2 );
-
-    % Get estimated lambda
-    lambda_hat_exp = mean( lambda_hat_exp, 2 );
-    lambda_hat_rayl = mean( lambda_hat_rayl, 2 );
         
     % Calculate MSE
     mse_exp(:,i) = calcMSE( lambda_hat_exp, lambda );
@@ -261,10 +249,6 @@ prob_rayl = mean( calcRayl( data, pred_rayl ) );
 % The distribution in data is probably drawn from a Rayleigh distribution,
 %       since the probability of the data is much higher given a Rayleigh
 %       distribution.
-
-
-
-
 
 
 ##### SOURCE END #####

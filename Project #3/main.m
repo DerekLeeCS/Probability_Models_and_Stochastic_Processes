@@ -47,10 +47,6 @@ for numObv = range
     % Calculate variance
     var_exp(:,i) = var( lambda_hat_exp, 0, 2 );
     var_rayl(:,i) = var( lambda_hat_rayl, 0, 2 );
-
-    % Get estimated lambda
-    lambda_hat_exp = mean( lambda_hat_exp, 2 );
-    lambda_hat_rayl = mean( lambda_hat_rayl, 2 );
         
     % Calculate MSE
     mse_exp(:,i) = calcMSE( lambda_hat_exp, lambda );
