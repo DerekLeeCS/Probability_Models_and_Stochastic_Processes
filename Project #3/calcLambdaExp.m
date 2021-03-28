@@ -1,3 +1,6 @@
 function lambda_hat = calcLambdaExp( data )  
-    lambda_hat = mean( data, 3 );   
+
+    lastDim = length( size(data) );
+    lambda_hat = mean( data, lastDim );   
+    
 end

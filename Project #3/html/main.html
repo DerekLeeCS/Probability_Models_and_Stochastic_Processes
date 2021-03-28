@@ -1,0 +1,271 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>main</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-03-28"><meta name="DC.source" content="main.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Constants</a></li><li><a href="#3">Part 1</a></li><li><a href="#4">Part 2</a></li></ul></div><pre class="codeinput">clc
+clear
+close <span class="string">all</span>
+
+<span class="comment">% Probability &amp; Stochastic Processes Spring 2021</span>
+<span class="comment">% Project #3</span>
+<span class="comment">% Brian Doan, Derek Lee</span>
+</pre><h2 id="2">Constants</h2><pre class="codeinput">load( <span class="string">'data.mat'</span> );
+NUM_TRIALS = 1e3;
+NUM_OBSERVATIONS = 500;
+lambda = [ 1; 5; 10 ];
+</pre><h2 id="3">Part 1</h2><pre class="codeinput">range = 1:NUM_OBSERVATIONS;
+
+<span class="comment">% Preallocate matrices</span>
+mse_exp = zeros( length(lambda), length(range) );
+mse_rayl = zeros( length(lambda), length(range) );
+bias_exp = zeros( length(lambda), length(range) );
+bias_rayl = zeros( length(lambda), length(range) );
+var_exp = zeros( length(lambda), length(range) );
+var_rayl = zeros( length(lambda), length(range) );
+
+<span class="comment">% Plot a range of lambdas for a range of observations</span>
+<span class="keyword">for</span> numObv = range
+
+    <span class="comment">% Used for indexing</span>
+    i = numObv;
+
+    <span class="comment">% Generates a [ length(lambda) by numObv ] matrix</span>
+    <span class="comment">% Each row represents one value of lambda</span>
+    data_exp = exprnd( repmat( lambda, [1,NUM_TRIALS,numObv] ) );
+    data_rayl = raylrnd( repmat( lambda, [1,NUM_TRIALS,numObv] ) );
+
+    <span class="comment">% Log likelihood is maximized when lambda = 1/mean(x)</span>
+    lambda_hat_exp = calcLambdaExp( data_exp );
+<span class="comment">%     disp(lambda_hat_exp)</span>
+
+    <span class="comment">% Log likelihood is maximized when lambda = sqrt( 1/2n * sum(x^2) )</span>
+    lambda_hat_rayl = calcLambdaRayl( data_rayl );
+<span class="comment">%     disp(lambda_rayl_hat)</span>
+
+    <span class="comment">% Calculate variance</span>
+    var_exp(:,i) = var( lambda_hat_exp, 0, 2 );
+    var_rayl(:,i) = var( lambda_hat_rayl, 0, 2 );
+
+    <span class="comment">% Get estimated lambda</span>
+    lambda_hat_exp = mean( lambda_hat_exp, 2 );
+    lambda_hat_rayl = mean( lambda_hat_rayl, 2 );
+
+    <span class="comment">% Calculate MSE</span>
+    mse_exp(:,i) = calcMSE( lambda_hat_exp, lambda );
+    mse_rayl(:,i) = calcMSE( lambda_hat_rayl, lambda );
+
+    <span class="comment">% Calculate bias</span>
+    bias_exp(:,i) = calcBias( lambda_hat_exp, lambda );
+    bias_rayl(:,i) = calcBias( lambda_hat_rayl, lambda );
+
+<span class="keyword">end</span>
+
+
+<span class="comment">% Plot MSE</span>
+plotData( mse_exp, lambda, <span class="string">"MSE"</span>, <span class="string">"Exponential MSE"</span> );
+plotData( mse_rayl, lambda, <span class="string">"MSE"</span>, <span class="string">"Rayleigh MSE"</span> );
+
+<span class="comment">% Plot bias</span>
+plotData( bias_exp, lambda, <span class="string">"Bias"</span>, <span class="string">"Exponential Bias"</span> );
+plotData( bias_rayl, lambda, <span class="string">"Bias"</span>, <span class="string">"Rayleigh Bias"</span> );
+
+<span class="comment">% Plot variance</span>
+plotData( var_exp, lambda, <span class="string">"Variance"</span>, <span class="string">"Exponential Variance"</span> );
+plotData( var_rayl, lambda, <span class="string">"Variance"</span>, <span class="string">"Rayleigh Variance"</span> );
+</pre><h2 id="4">Part 2</h2><pre class="codeinput"><span class="comment">% Calculate lambda</span>
+pred_exp = calcLambdaExp( data );
+pred_rayl = calcLambdaRayl( data );
+
+<span class="comment">% Check answer with built-in MATLAB function</span>
+[ param_exp, ~ ] = mle( data, <span class="string">'distribution'</span>, <span class="string">'Exponential'</span> );
+[ param_rayl, ~ ] = mle( data, <span class="string">'distribution'</span>, <span class="string">'Rayleigh'</span> );
+
+<span class="comment">% Verify lambda estimation</span>
+eps = 1e-5;
+assert( abs(pred_exp-param_exp) &lt; eps, <span class="string">"Exponential prediction is incorrect."</span> );
+assert( abs(pred_rayl-param_rayl) &lt; eps, <span class="string">"Rayleigh prediction is incorrect."</span> );
+
+<span class="comment">% Get the probability of data given the distribution</span>
+prob_exp = mean( calcExp( data, pred_exp ) );
+prob_rayl = mean( calcRayl( data, pred_rayl ) );
+
+<span class="comment">% The distribution in data is probably drawn from a Rayleigh distribution,</span>
+<span class="comment">%       since the probability of the data is much higher given a Rayleigh</span>
+<span class="comment">%       distribution.</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc
+clear
+close all
+
+% Probability & Stochastic Processes Spring 2021
+% Project #3
+% Brian Doan, Derek Lee
+
+
+%% Constants
+
+load( 'data.mat' );
+NUM_TRIALS = 1e3;
+NUM_OBSERVATIONS = 500;
+lambda = [ 1; 5; 10 ];
+
+
+%% Part 1
+
+range = 1:NUM_OBSERVATIONS;
+
+% Preallocate matrices
+mse_exp = zeros( length(lambda), length(range) );
+mse_rayl = zeros( length(lambda), length(range) );
+bias_exp = zeros( length(lambda), length(range) );
+bias_rayl = zeros( length(lambda), length(range) );
+var_exp = zeros( length(lambda), length(range) );
+var_rayl = zeros( length(lambda), length(range) );
+
+% Plot a range of lambdas for a range of observations
+for numObv = range
+    
+    % Used for indexing
+    i = numObv;
+    
+    % Generates a [ length(lambda) by numObv ] matrix
+    % Each row represents one value of lambda
+    data_exp = exprnd( repmat( lambda, [1,NUM_TRIALS,numObv] ) );
+    data_rayl = raylrnd( repmat( lambda, [1,NUM_TRIALS,numObv] ) );
+    
+    % Log likelihood is maximized when lambda = 1/mean(x)
+    lambda_hat_exp = calcLambdaExp( data_exp );
+%     disp(lambda_hat_exp)
+    
+    % Log likelihood is maximized when lambda = sqrt( 1/2n * sum(x^2) )
+    lambda_hat_rayl = calcLambdaRayl( data_rayl );
+%     disp(lambda_rayl_hat)
+
+    % Calculate variance
+    var_exp(:,i) = var( lambda_hat_exp, 0, 2 );
+    var_rayl(:,i) = var( lambda_hat_rayl, 0, 2 );
+
+    % Get estimated lambda
+    lambda_hat_exp = mean( lambda_hat_exp, 2 );
+    lambda_hat_rayl = mean( lambda_hat_rayl, 2 );
+        
+    % Calculate MSE
+    mse_exp(:,i) = calcMSE( lambda_hat_exp, lambda );
+    mse_rayl(:,i) = calcMSE( lambda_hat_rayl, lambda );
+    
+    % Calculate bias
+    bias_exp(:,i) = calcBias( lambda_hat_exp, lambda );
+    bias_rayl(:,i) = calcBias( lambda_hat_rayl, lambda );
+
+end
+
+    
+% Plot MSE
+plotData( mse_exp, lambda, "MSE", "Exponential MSE" );
+plotData( mse_rayl, lambda, "MSE", "Rayleigh MSE" );
+
+% Plot bias 
+plotData( bias_exp, lambda, "Bias", "Exponential Bias" );
+plotData( bias_rayl, lambda, "Bias", "Rayleigh Bias" );
+
+% Plot variance
+plotData( var_exp, lambda, "Variance", "Exponential Variance" );
+plotData( var_rayl, lambda, "Variance", "Rayleigh Variance" );
+
+
+%% Part 2
+
+% Calculate lambda
+pred_exp = calcLambdaExp( data );
+pred_rayl = calcLambdaRayl( data );
+
+% Check answer with built-in MATLAB function
+[ param_exp, ~ ] = mle( data, 'distribution', 'Exponential' );
+[ param_rayl, ~ ] = mle( data, 'distribution', 'Rayleigh' );
+
+% Verify lambda estimation
+eps = 1e-5;
+assert( abs(pred_exp-param_exp) < eps, "Exponential prediction is incorrect." );
+assert( abs(pred_rayl-param_rayl) < eps, "Rayleigh prediction is incorrect." );
+
+% Get the probability of data given the distribution
+prob_exp = mean( calcExp( data, pred_exp ) );
+prob_rayl = mean( calcRayl( data, pred_rayl ) );
+
+% The distribution in data is probably drawn from a Rayleigh distribution,
+%       since the probability of the data is much higher given a Rayleigh
+%       distribution.
+
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>
