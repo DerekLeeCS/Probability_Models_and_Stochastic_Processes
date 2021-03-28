@@ -18,8 +18,6 @@ lambda_2 = [ 0.75; 1.5 ];
 
 %% Extra Credit
 
-
-
 for i = 1:length(n_vals)
     
     n = n_vals(i);
@@ -34,11 +32,13 @@ for i = 1:length(n_vals)
     best_lambda_1 = 0;
     best_lambda_2 = 0;
     best_n = 0;
-    for j = 1:N
+    for j = 2:N-1
         
-        % Log likelihood is maximized when lambda = sqrt( 1/2n * sum(x^2) )
+        % Log likelihood is maximized when 
+        %       lambda_1 = 1/n * sum(k) from 1 to n
+        %       lambda_2 = 1/(N-n) * sum(k) from n+1 to N
         lambda_est_1 = sum( data_poisson(:,1:j), 2 ) / j;
-        lambda_est_2 = sum( data_poisson(:,j+1:end), 2 ) / j;
+        lambda_est_2 = sum( data_poisson(:,j+1:end), 2 ) / (N-j);
         
         curProb = sum( calcPoisson( data_poisson(:,1:j), lambda_est_1 ), 2 );
         curProb = curProb + sum( calcPoisson( data_poisson(:,j+1:end), ...
