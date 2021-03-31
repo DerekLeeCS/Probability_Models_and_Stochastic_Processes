@@ -12,13 +12,18 @@ close all
 N = 100;
 
 n_vals = [ 25, 50, 75 ];
-lambda_1 = [ 0.5; 1 ];
-lambda_2 = [ 0.75; 1.5 ];
+lambda_1 = [ 3; 4 ];
+lambda_2 = [ 5; 2 ];
 
+n_pred = zeros( length(n_vals), 2 );
 mse_poiss_1 = zeros( length(lambda_1), length(n_vals) );
 mse_poiss_2 = zeros( length(lambda_2), length(n_vals) );
 bias_poiss_1 = zeros( length(lambda_1), length(n_vals) );
 bias_poiss_2 = zeros( length(lambda_2), length(n_vals) );
+
+lambda_best_1 = zeros( length(lambda_1), 1 );
+lambda_best_2 = zeros( length(lambda_1), 1 );
+n_best = zeros( length(lambda_1), 1 );
 
 
 %% Extra Credit
@@ -34,42 +39,42 @@ for i = 1:length(n_vals)
     
     % Brute force the max-likelihood estimate
     curMaxProb = -1e5;
-    best_lambda_1 = 0;
-    best_lambda_2 = 0;
-    best_n = 0;
     for j = 2:N-1
         
         % Log likelihood is maximized when 
         %       lambda_1 = 1/n * sum(k) from 1 to n
         %       lambda_2 = 1/(N-n) * sum(k) from n+1 to N
-        lambda_est_1 = sum( data_poisson(:,1:j), 2 ) / j;
-        lambda_est_2 = sum( data_poisson(:,j+1:end), 2 ) / (N-j);
+        lambda_temp_1 = sum( data_poisson(:,1:j), 2 ) / j;
+        lambda_temp_2 = sum( data_poisson(:,j+1:end), 2 ) / (N-j);
         
-        curProb = sum( log(calcPoisson( data_poisson(:,1:j), lambda_est_1 )), 2 );
+        curProb = sum( log(calcPoisson( data_poisson(:,1:j), lambda_temp_1 )), 2 );
         curProb = curProb + sum( log(calcPoisson( data_poisson(:,j+1:end), ...
-                    lambda_est_2 )), 2 );
+                    lambda_temp_2 )), 2 );
         
         % Reassign the new maximum
-        if curProb > curMaxProb
-            
-            curMaxProb = curProb;
-            best_lambda_1 = lambda_est_1;
-            best_lambda_2 = lambda_est_2;
-            best_n = j;
+        tempNs = j*ones(length(lambda_1),1);
+        inds = (curProb > curMaxProb) > 0;
+        curMaxProb = max(curMaxProb, curProb);
+        lambda_best_1(inds) = lambda_temp_1(inds);
+        lambda_best_2(inds) = lambda_temp_2(inds);
+        n_best(inds) = tempNs(inds);
 
-        end
-        
     end
     
+    n_pred(i,:) = n_best;
+    
     % Calculate MSE
-    mse_poiss_1(:,i) = calcMSE(best_lambda_1, lambda_1);
-    mse_poiss_2(:,i) = calcMSE(best_lambda_2, lambda_2);
+    mse_poiss_1(:,i) = calcMSE(lambda_best_1, lambda_1);
+    mse_poiss_2(:,i) = calcMSE(lambda_best_2, lambda_2);
 
     % Calculate Bias
-    bias_poiss_1(:,i) = calcBias(best_lambda_1, lambda_1); 
-    bias_poiss_2(:,i) = calcBias(best_lambda_2, lambda_2);
+    bias_poiss_1(:,i) = calcBias(lambda_best_1, lambda_1); 
+    bias_poiss_2(:,i) = calcBias(lambda_best_2, lambda_2);
     
 end
+
+
+%% Plot
 
 % Plot MSE
 plotDataEC(mse_poiss_1, lambda_1, "MSE", "Poisson MSE Lambda 1");
