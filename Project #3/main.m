@@ -88,8 +88,8 @@ assert( abs(pred_exp-param_exp) < eps, "Exponential prediction is incorrect." );
 assert( abs(pred_rayl-param_rayl) < eps, "Rayleigh prediction is incorrect." );
 
 % Get the probability of data given the distribution
-prob_exp = mean( calcExp( data, pred_exp ) );
-prob_rayl = mean( calcRayl( data, pred_rayl ) );
+prob_exp = sum( log(calcExp( data, pred_exp )) );
+prob_rayl = sum( log(calcRayl( data, pred_rayl )) );
 
 % The distribution in data is probably drawn from a Rayleigh distribution,
 %       since the probability of the data is much higher given a Rayleigh
