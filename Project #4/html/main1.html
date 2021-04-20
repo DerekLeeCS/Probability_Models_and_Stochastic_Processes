@@ -1,0 +1,481 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>main1</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-20"><meta name="DC.source" content="main1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Constants</a></li><li><a href="#3">Part A</a></li><li><a href="#4">Part B &amp; C</a></li><li><a href="#5">Part D</a></li><li><a href="#6">Part E Part 1</a></li><li><a href="#7">Part E Part 2</a></li></ul></div><pre class="codeinput">clc
+clear
+close <span class="string">all</span>
+
+<span class="comment">% Probability &amp; Stochastic Processes Spring 2021</span>
+<span class="comment">% Project #4 Part 1</span>
+<span class="comment">% Brian Doan, Derek Lee</span>
+</pre><h2 id="2">Constants</h2><pre class="codeinput">NUM_ITERATIONS = 1e4;
+SZ = [ 1, NUM_ITERATIONS ];
+PROB_NOT_PRESENT = 0.8;
+PROB_PRESENT = 1 - PROB_NOT_PRESENT;
+
+A = 1;
+var = 0.5;
+sig = sqrt(var);
+
+<span class="comment">% Decide H_0 when x &gt; A/2 + sig^2/A * ln(P_0 / (1-P_0))</span>
+BOUNDARY = A/2 + ( sig^2/A )*log( PROB_NOT_PRESENT / (1-PROB_NOT_PRESENT) );
+</pre><h2 id="3">Part A</h2><pre class="codeinput"><span class="comment">% Generate the data</span>
+q1a_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+q1a_X = normrnd( 0, sig, SZ );
+q1a_Y_noise = q1a_X+q1a_Y;
+
+<span class="comment">% Decide H_0 when x &gt; boundary</span>
+q1a_Y_hat = gaussianMAP( q1a_Y_noise, A, BOUNDARY );
+
+<span class="comment">% Calculate the error</span>
+q1a_error_experimental = calcProbError( q1a_Y, q1a_Y_hat );
+
+<span class="comment">% Calculate the theoretical error</span>
+q1a_error_theoretical = qfunc( BOUNDARY / sig ) * PROB_NOT_PRESENT <span class="keyword">...</span>
+            + qfunc( (A-BOUNDARY) / sig ) * PROB_PRESENT;
+
+<span class="comment">% The experimental probability roughly matches the theoretical</span>
+<span class="comment">% probability.</span>
+</pre><h2 id="4">Part B &amp; C</h2><pre class="codeinput">q1b_etas = linspace(-10,10,1000);
+q1b_sig = logspace(-1, 1, 5);
+q1b_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+P_D = zeros( length(q1b_etas),1 );
+P_F = zeros( length(q1b_etas),1 );
+
+<span class="keyword">for</span> i = 1:length(q1b_sig)
+
+    sig_temp = q1b_sig(i);
+    q1b_X = normrnd( 0, sig_temp, SZ );
+    q1b_Y_noise = q1b_X+q1b_Y;
+
+    <span class="comment">% Compute the boundary</span>
+    q1b_boundary = A/2 + ( sig_temp^2/A ) * <span class="keyword">...</span>
+        log( PROB_NOT_PRESENT / (1-PROB_NOT_PRESENT) );
+
+    <span class="comment">% Equation 8.8 from Detection Theory pdf</span>
+    <span class="comment">% Credit to Jonathan Lam for finding it</span>
+    <span class="comment">% (C01 - C11)*P1*f(y|H1) = (C10 - C00)*P0*f(y|H0)</span>
+    <span class="comment">% C_11=0=C_00 &amp; C_01=10=C_10</span>
+    <span class="comment">% P_1 -&gt; 10*P_1</span>
+    q1c_boundary = A/2 + ( sig_temp^2/A ) * <span class="keyword">...</span>
+        log( PROB_NOT_PRESENT / (10*(1-PROB_NOT_PRESENT) ));
+
+    <span class="comment">% Find the closest point to the decision boundaries</span>
+    [~, q1b_ind] = min( abs( q1b_etas-q1b_boundary ) );
+    [~, q1c_ind] = min( abs( q1b_etas-q1c_boundary ) );
+
+    <span class="keyword">for</span> j = 1:length(q1b_etas)
+
+        q1b_Y_hat = gaussianMAP( q1b_Y_noise, A, q1b_etas(j) );
+
+        <span class="comment">% Get probabilities for detection &amp; false detection</span>
+        P_D(j) = sum( (q1b_Y_hat == A) &amp; (q1b_Y == A) ) / sum(q1b_Y == A);
+        P_F(j) = sum( (q1b_Y_hat == A) &amp; (q1b_Y == 0) ) / sum(q1b_Y == 0);
+
+    <span class="keyword">end</span>
+
+    <span class="comment">% Plot</span>
+    figure();
+    hold <span class="string">on</span>;
+
+    plot( P_F, P_D, <span class="string">'DisplayName'</span>, <span class="string">'ROC'</span> );
+    plot( P_F(q1b_ind), P_D(q1b_ind), <span class="string">'*'</span>, <span class="keyword">...</span>
+        <span class="string">'DisplayName'</span>, <span class="string">'MAP Boundary'</span> );
+    plot( P_F(q1c_ind), P_D(q1c_ind), <span class="string">'o'</span>, <span class="keyword">...</span>
+        <span class="string">'DisplayName'</span>, <span class="string">'Modified Cost Boundary'</span> );
+
+    hold <span class="string">off</span>;
+    xlabel( <span class="string">"P_F"</span> );
+    ylabel( <span class="string">"P_D"</span> );
+    title( <span class="string">"ROC for SNR="</span> + A/sig_temp );
+    legend( <span class="string">'Location'</span>, <span class="string">'SouthEast'</span> );
+
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="main1_01.png" alt=""> <img vspace="5" hspace="5" src="main1_02.png" alt=""> <img vspace="5" hspace="5" src="main1_03.png" alt=""> <img vspace="5" hspace="5" src="main1_04.png" alt=""> <img vspace="5" hspace="5" src="main1_05.png" alt=""> <h2 id="5">Part D</h2><pre class="codeinput">priors_not_present = linspace(0,1,1e2);
+q1d_cost = zeros( length(priors_not_present), 1 );
+q1d_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+q1d_X = normrnd( 0, sig, SZ );
+q1d_Y_noise = q1d_X+q1d_Y;
+
+<span class="keyword">for</span> i = 1:length(priors_not_present)
+
+    <span class="comment">% Compute the boundary</span>
+    q1d_boundary = A/2 + ( sig^2/A ) * <span class="keyword">...</span>
+        log( priors_not_present(i) / (10*(1-priors_not_present(i))) );
+
+    q1d_Y_hat = gaussianMAP( q1d_Y_noise, A, q1d_boundary );
+
+    <span class="comment">% Calculate the cost</span>
+    <span class="comment">% False Negative + False Positive</span>
+    q1d_cost(i) = 10*mean( (q1d_Y_hat == 0) &amp; (q1d_Y == A) ) + <span class="keyword">...</span>
+                mean( (q1d_Y_hat == A) &amp; (q1d_Y == 0) );
+
+<span class="keyword">end</span>
+
+figure();
+plot( priors_not_present, q1d_cost );
+xlabel( <span class="string">"P(Target Not Present)"</span> );
+ylabel( <span class="string">"Mean Cost"</span> );
+title( <span class="string">"Cost vs. P(Target Not Present)"</span> );
+</pre><img vspace="5" hspace="5" src="main1_07.png" alt=""> <h2 id="6">Part E Part 1</h2><pre class="codeinput"><span class="comment">% Generate sig_z</span>
+sig_z = linspace(0.1, 1, 10);
+SZ_Z = size(sig_z);
+
+<span class="comment">% Generate the data</span>
+q1e_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+q1e_X = normrnd( 0, sig, SZ );
+q1e_Z = normrnd( 0, sig_z, SZ_Z );
+
+<span class="comment">% A+X when target is present</span>
+<span class="comment">% A+Z when target is not present</span>
+q1e_Y_noise = (q1e_X+A).*(q1e_Y == A) + <span class="keyword">...</span>
+                (q1e_Z.'+A).*(q1e_Y == 0);
+
+<span class="comment">% (x-A)^2 = the following</span>
+q1e_boundary = log( sig*PROB_NOT_PRESENT ./ (sig_z*(1-PROB_NOT_PRESENT)) ) .* <span class="keyword">...</span>
+                ( 2*sig.^2*sig_z.^2 ) ./ ( sig.^2 - sig_z.^2 );
+
+q1e_Y_hat = gaussianMAP( (q1e_Y_noise-A).^2, A, q1e_boundary' );
+
+<span class="comment">% Calculate the error</span>
+q1e_error_experimental = calcProbError( q1e_Y, q1e_Y_hat );
+
+<span class="comment">% Calculate the theoretical error</span>
+p_error_theoretical = qfunc( (A+q1e_boundary) ./ sig_z ) * PROB_NOT_PRESENT <span class="keyword">...</span>
+            + qfunc( (A-q1e_boundary) / sig ) * PROB_PRESENT;
+</pre><h2 id="7">Part E Part 2</h2><pre class="codeinput">q1e2_etas = linspace(-10, 10, 1e3);
+P_F = zeros(length(q1e2_etas), 1);
+P_D = zeros(length(q1e2_etas), 1);
+
+sig_z = [3; 5];
+sig = [1/5; 1/2];
+q1e2_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+
+<span class="keyword">for</span> i = 1:length(sig_z)
+
+    <span class="keyword">for</span> j = 1:length(sig)
+
+        <span class="comment">% Generate the data</span>
+        q1e2_Z = normrnd( 0, sig_z(i), SZ );
+        q1e2_X = normrnd( 0, sig(j), SZ );
+        q1e2_Y_noise = A + q1e2_X.*(q1e2_Y == A) + <span class="keyword">...</span>
+                        q1e2_Z.*(q1e2_Y == 0);
+        q1e2_boundary = log( sig(j)*PROB_NOT_PRESENT ./ (sig_z(i)*(1-PROB_NOT_PRESENT)) ) .* <span class="keyword">...</span>
+                ( 2*sig(j).^2*sig_z(i).^2 ) ./ ( sig(j).^2 - sig_z(i).^2 );
+
+        <span class="comment">% Find the closest point to the decision boundaries</span>
+        [~, q1e2_ind] = min( abs( q1e2_etas-q1e2_boundary ) );
+
+        <span class="keyword">for</span> k=1:length(q1e2_etas)
+
+            q1e2_Y_hat = gaussianMAP( (q1e2_Y_noise-A).^2, A, q1e2_etas(k) );
+
+            <span class="comment">% Get probabilities for detection &amp; false detection</span>
+            P_D(k) = sum( (q1e2_Y_hat == A) &amp; (q1e2_Y == A) ) / sum(q1e2_Y == A);
+            P_F(k) = sum( (q1e2_Y_hat == A) &amp; (q1e2_Y == 0) ) / sum(q1e2_Y == 0);
+
+        <span class="keyword">end</span>
+
+        <span class="comment">% Plot</span>
+        figure();
+        hold <span class="string">on</span>;
+
+        plot( P_F, P_D, <span class="string">'DisplayName'</span>, <span class="string">'ROC'</span> );
+        plot( P_F(q1e2_ind), P_D(q1e2_ind), <span class="string">'*'</span>, <span class="keyword">...</span>
+            <span class="string">'DisplayName'</span>, <span class="string">'MAP Boundary'</span> );
+
+        hold <span class="string">off</span>;
+        xlabel( <span class="string">"P_F"</span> );
+        ylabel( <span class="string">"P_D"</span> );
+        title( <span class="string">"ROC for SNR="</span> + sig(i)/sig_z(j) );
+
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="main1_09.png" alt=""> <img vspace="5" hspace="5" src="main1_10.png" alt=""> <img vspace="5" hspace="5" src="main1_11.png" alt=""> <img vspace="5" hspace="5" src="main1_12.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc
+clear
+close all
+
+% Probability & Stochastic Processes Spring 2021
+% Project #4 Part 1
+% Brian Doan, Derek Lee
+
+
+%% Constants
+
+NUM_ITERATIONS = 1e4;
+SZ = [ 1, NUM_ITERATIONS ];
+PROB_NOT_PRESENT = 0.8;
+PROB_PRESENT = 1 - PROB_NOT_PRESENT;
+
+A = 1;
+var = 0.5;
+sig = sqrt(var);
+
+% Decide H_0 when x > A/2 + sig^2/A * ln(P_0 / (1-P_0))
+BOUNDARY = A/2 + ( sig^2/A )*log( PROB_NOT_PRESENT / (1-PROB_NOT_PRESENT) );
+
+
+%% Part A
+
+% Generate the data
+q1a_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+q1a_X = normrnd( 0, sig, SZ );
+q1a_Y_noise = q1a_X+q1a_Y;
+
+% Decide H_0 when x > boundary
+q1a_Y_hat = gaussianMAP( q1a_Y_noise, A, BOUNDARY );
+
+% Calculate the error
+q1a_error_experimental = calcProbError( q1a_Y, q1a_Y_hat );
+
+% Calculate the theoretical error
+q1a_error_theoretical = qfunc( BOUNDARY / sig ) * PROB_NOT_PRESENT ...
+            + qfunc( (A-BOUNDARY) / sig ) * PROB_PRESENT;
+
+% The experimental probability roughly matches the theoretical
+% probability.
+
+
+%% Part B & C
+
+q1b_etas = linspace(-10,10,1000);  
+q1b_sig = logspace(-1, 1, 5);
+q1b_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+P_D = zeros( length(q1b_etas),1 );
+P_F = zeros( length(q1b_etas),1 );
+
+for i = 1:length(q1b_sig)
+    
+    sig_temp = q1b_sig(i);
+    q1b_X = normrnd( 0, sig_temp, SZ );
+    q1b_Y_noise = q1b_X+q1b_Y;  
+    
+    % Compute the boundary
+    q1b_boundary = A/2 + ( sig_temp^2/A ) * ...
+        log( PROB_NOT_PRESENT / (1-PROB_NOT_PRESENT) );
+    
+    % Equation 8.8 from Detection Theory pdf
+    % Credit to Jonathan Lam for finding it
+    % (C01 - C11)*P1*f(y|H1) = (C10 - C00)*P0*f(y|H0)
+    % C_11=0=C_00 & C_01=10=C_10
+    % P_1 -> 10*P_1
+    q1c_boundary = A/2 + ( sig_temp^2/A ) * ...
+        log( PROB_NOT_PRESENT / (10*(1-PROB_NOT_PRESENT) ));
+    
+    % Find the closest point to the decision boundaries
+    [~, q1b_ind] = min( abs( q1b_etas-q1b_boundary ) );
+    [~, q1c_ind] = min( abs( q1b_etas-q1c_boundary ) );
+    
+    for j = 1:length(q1b_etas)
+        
+        q1b_Y_hat = gaussianMAP( q1b_Y_noise, A, q1b_etas(j) );
+        
+        % Get probabilities for detection & false detection
+        P_D(j) = sum( (q1b_Y_hat == A) & (q1b_Y == A) ) / sum(q1b_Y == A);
+        P_F(j) = sum( (q1b_Y_hat == A) & (q1b_Y == 0) ) / sum(q1b_Y == 0);
+
+    end
+
+    % Plot
+    figure();
+    hold on;
+    
+    plot( P_F, P_D, 'DisplayName', 'ROC' );
+    plot( P_F(q1b_ind), P_D(q1b_ind), '*', ...
+        'DisplayName', 'MAP Boundary' );
+    plot( P_F(q1c_ind), P_D(q1c_ind), 'o', ...
+        'DisplayName', 'Modified Cost Boundary' );
+    
+    hold off;
+    xlabel( "P_F" );
+    ylabel( "P_D" );
+    title( "ROC for SNR=" + A/sig_temp );
+    legend( 'Location', 'SouthEast' );
+    
+end
+
+
+%% Part D
+
+priors_not_present = linspace(0,1,1e2);
+q1d_cost = zeros( length(priors_not_present), 1 );
+q1d_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+q1d_X = normrnd( 0, sig, SZ );
+q1d_Y_noise = q1d_X+q1d_Y;  
+    
+for i = 1:length(priors_not_present)
+    
+    % Compute the boundary
+    q1d_boundary = A/2 + ( sig^2/A ) * ...
+        log( priors_not_present(i) / (10*(1-priors_not_present(i))) );
+    
+    q1d_Y_hat = gaussianMAP( q1d_Y_noise, A, q1d_boundary );
+    
+    % Calculate the cost
+    % False Negative + False Positive
+    q1d_cost(i) = 10*mean( (q1d_Y_hat == 0) & (q1d_Y == A) ) + ...
+                mean( (q1d_Y_hat == A) & (q1d_Y == 0) );
+            
+end
+
+figure();
+plot( priors_not_present, q1d_cost );
+xlabel( "P(Target Not Present)" );
+ylabel( "Mean Cost" );
+title( "Cost vs. P(Target Not Present)" );
+
+
+%% Part E Part 1
+
+% Generate sig_z
+sig_z = linspace(0.1, 1, 10);
+SZ_Z = size(sig_z);
+
+% Generate the data
+q1e_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+q1e_X = normrnd( 0, sig, SZ );
+q1e_Z = normrnd( 0, sig_z, SZ_Z );
+
+% A+X when target is present
+% A+Z when target is not present
+q1e_Y_noise = (q1e_X+A).*(q1e_Y == A) + ...
+                (q1e_Z.'+A).*(q1e_Y == 0);
+
+% (x-A)^2 = the following
+q1e_boundary = log( sig*PROB_NOT_PRESENT ./ (sig_z*(1-PROB_NOT_PRESENT)) ) .* ...
+                ( 2*sig.^2*sig_z.^2 ) ./ ( sig.^2 - sig_z.^2 );
+            
+q1e_Y_hat = gaussianMAP( (q1e_Y_noise-A).^2, A, q1e_boundary' );
+
+% Calculate the error
+q1e_error_experimental = calcProbError( q1e_Y, q1e_Y_hat );
+
+% Calculate the theoretical error
+p_error_theoretical = qfunc( (A+q1e_boundary) ./ sig_z ) * PROB_NOT_PRESENT ...
+            + qfunc( (A-q1e_boundary) / sig ) * PROB_PRESENT;
+        
+        
+%% Part E Part 2
+
+q1e2_etas = linspace(-10, 10, 1e3);
+P_F = zeros(length(q1e2_etas), 1);
+P_D = zeros(length(q1e2_etas), 1);
+
+sig_z = [3; 5];
+sig = [1/5; 1/2];
+q1e2_Y = genTarget( A, PROB_NOT_PRESENT, SZ );
+
+for i = 1:length(sig_z)
+    
+    for j = 1:length(sig)
+    
+        % Generate the data
+        q1e2_Z = normrnd( 0, sig_z(i), SZ );
+        q1e2_X = normrnd( 0, sig(j), SZ );
+        q1e2_Y_noise = A + q1e2_X.*(q1e2_Y == A) + ...
+                        q1e2_Z.*(q1e2_Y == 0);
+        q1e2_boundary = log( sig(j)*PROB_NOT_PRESENT ./ (sig_z(i)*(1-PROB_NOT_PRESENT)) ) .* ...
+                ( 2*sig(j).^2*sig_z(i).^2 ) ./ ( sig(j).^2 - sig_z(i).^2 );
+            
+        % Find the closest point to the decision boundaries
+        [~, q1e2_ind] = min( abs( q1e2_etas-q1e2_boundary ) );
+    
+        for k=1:length(q1e2_etas)
+
+            q1e2_Y_hat = gaussianMAP( (q1e2_Y_noise-A).^2, A, q1e2_etas(k) );
+
+            % Get probabilities for detection & false detection
+            P_D(k) = sum( (q1e2_Y_hat == A) & (q1e2_Y == A) ) / sum(q1e2_Y == A);
+            P_F(k) = sum( (q1e2_Y_hat == A) & (q1e2_Y == 0) ) / sum(q1e2_Y == 0);
+            
+        end
+
+        % Plot
+        figure();
+        hold on;
+
+        plot( P_F, P_D, 'DisplayName', 'ROC' );
+        plot( P_F(q1e2_ind), P_D(q1e2_ind), '*', ...
+            'DisplayName', 'MAP Boundary' );
+        
+        hold off;
+        xlabel( "P_F" );
+        ylabel( "P_D" );
+        title( "ROC for SNR=" + sig(i)/sig_z(j) );
+
+    end
+
+end
+
+
+##### SOURCE END #####
+--></body></html>
